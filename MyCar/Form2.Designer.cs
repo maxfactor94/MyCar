@@ -40,6 +40,8 @@
             this.label5 = new System.Windows.Forms.Label();
             this.categoryTextBox = new System.Windows.Forms.ComboBox();
             this.label6 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.dateTimePicker = new System.Windows.Forms.DateTimePicker();
             this.SuspendLayout();
             // 
             // mileageTextBox
@@ -109,9 +111,9 @@
             // 
             // saveBtn
             // 
-            this.saveBtn.Location = new System.Drawing.Point(16, 145);
+            this.saveBtn.Location = new System.Drawing.Point(15, 171);
             this.saveBtn.Name = "saveBtn";
-            this.saveBtn.Size = new System.Drawing.Size(772, 23);
+            this.saveBtn.Size = new System.Drawing.Size(773, 23);
             this.saveBtn.TabIndex = 5;
             this.saveBtn.Text = "Сохранить";
             this.saveBtn.UseVisualStyleBackColor = true;
@@ -158,12 +160,31 @@
             this.label6.TabIndex = 11;
             this.label6.Text = "Текущий курс:";
             // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(13, 148);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(33, 13);
+            this.label7.TabIndex = 13;
+            this.label7.Text = "Дата";
+            // 
+            // dateTimePicker
+            // 
+            this.dateTimePicker.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dateTimePicker.Location = new System.Drawing.Point(77, 145);
+            this.dateTimePicker.Name = "dateTimePicker";
+            this.dateTimePicker.Size = new System.Drawing.Size(711, 20);
+            this.dateTimePicker.TabIndex = 14;
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.ClientSize = new System.Drawing.Size(800, 180);
+            this.ClientSize = new System.Drawing.Size(800, 207);
+            this.Controls.Add(this.dateTimePicker);
+            this.Controls.Add(this.label7);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.categoryTextBox);
             this.Controls.Add(this.label5);
@@ -199,5 +220,7 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox categoryTextBox;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.DateTimePicker dateTimePicker;
     }
 }

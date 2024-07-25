@@ -16,6 +16,7 @@ namespace MyCar
         {
             InitializeComponent();
             LoadExchangeRateAsync();
+            dateTimePicker.Value = DateTime.Now;
         }
 
         private async void LoadExchangeRateAsync()
@@ -58,30 +59,54 @@ namespace MyCar
 
         private void saveBtn_Click(object sender, EventArgs e)
         {
-            priceBlrTextBox_TextChanged(sender,e);
-            using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+            if (categoryTextBox.Text == "")
             {
-                try
+                MessageBox.Show("Заполните поле Категория");
+            }
+            else if (mileageTextBox.Text == "")
+            {
+                MessageBox.Show("Заполните поле Пробег");
+            }
+            else if (descriptionTextBox.Text == "")
+            {
+                MessageBox.Show("Заполните поле Описание");
+            }
+            else if (priceBlrTextBox.Text == "")
+            {
+                MessageBox.Show("Заполните поле Цена BYN");
+            }
+            else if (priceUsdTextBox.Text == "")
+            {
+                MessageBox.Show("Заполните поле Цена USD");
+            }
+            else
+            {
+                priceBlrTextBox_TextChanged(sender, e);
+                using (SQLiteConnection conn = new SQLiteConnection(connectionString))
                 {
-                    conn.Open();
-                    string query = "INSERT INTO mycar (mileage, price_blr, price_usd, Description, Category) VALUES (@mileage, @price_blr, @price_usd, @description, @category)";
-                    using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
+                    try
                     {
-                        cmd.Parameters.AddWithValue("@mileage", mileageTextBox.Text);
-                        cmd.Parameters.AddWithValue("@price_blr", priceBlrTextBox.Text);
-                        cmd.Parameters.AddWithValue("@price_usd", priceUsdTextBox.Text);
-                        cmd.Parameters.AddWithValue("@description", descriptionTextBox.Text);
-                        cmd.Parameters.AddWithValue("@category", categoryTextBox.Text);
-                        cmd.ExecuteNonQuery();
-                    }
+                        conn.Open();
+                        string query = "INSERT INTO mycar (mileage, price_blr, price_usd, Description, Category, date) VALUES (@mileage, @price_blr, @price_usd, @description, @category, @date)";
+                        using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
+                        {
+                            cmd.Parameters.AddWithValue("@mileage", mileageTextBox.Text);
+                            cmd.Parameters.AddWithValue("@price_blr", priceBlrTextBox.Text);
+                            cmd.Parameters.AddWithValue("@price_usd", priceUsdTextBox.Text);
+                            cmd.Parameters.AddWithValue("@description", descriptionTextBox.Text);
+                            cmd.Parameters.AddWithValue("@category", categoryTextBox.Text);
+                            cmd.Parameters.AddWithValue("@date", dateTimePicker.Value);
+                            cmd.ExecuteNonQuery();
+                        }
 
-                    MessageBox.Show("Данные успешно сохранены");
-                    this.DialogResult = DialogResult.OK;
-                    this.Close();
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Ошибка при сохранении данных: " + ex.Message);
+                        MessageBox.Show("Данные успешно сохранены");
+                        this.DialogResult = DialogResult.OK;
+                        this.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("Ошибка при сохранении данных: " + ex.Message);
+                    }
                 }
             }
         }

@@ -15,7 +15,7 @@ namespace MyCar
             InitializeComponent();
             InitializeDataGridView();
             InitializeDatabase();
-            LoadCategories(); // Загрузите категории в ComboBox
+            //LoadCategories(); // Загрузите категории в ComboBox
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -38,7 +38,8 @@ namespace MyCar
                             price_blr REAL,
                             price_usd REAL,
                             Description TEXT,
-                            Category TEXT
+                            Category TEXT,
+                            date DATETIME
                         )";
                     using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, conn))
                     {
@@ -55,7 +56,7 @@ namespace MyCar
                 try
                 {
                     conn.Open();
-                    string query = "SELECT id, mileage, price_blr, price_usd, Description, Category FROM mycar";
+                    string query = "SELECT id, mileage, price_blr, price_usd, Description, Category, date FROM mycar";
                     if (!string.IsNullOrEmpty(category))
                     {
                         query += " WHERE Category = @category";
