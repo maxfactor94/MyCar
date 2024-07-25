@@ -36,7 +36,7 @@ namespace MyCar
                     double rate = jsonObj["Cur_OfficialRate"].Value<double>();
 
                     // Запись значения в файл
-                    File.WriteAllText(filePath, rate.ToString("0.00"));
+                    File.WriteAllText(filePath, rate.ToString("0.0000"));
 
                     Console.WriteLine("Курс успешно сохранен в файл cur.txt");
                     label6.Text = "Текущий курс НБ: "+ rate.ToString();
@@ -58,6 +58,7 @@ namespace MyCar
 
         private void saveBtn_Click(object sender, EventArgs e)
         {
+            priceBlrTextBox_TextChanged(sender,e);
             using (SQLiteConnection conn = new SQLiteConnection(connectionString))
             {
                 try
@@ -87,12 +88,12 @@ namespace MyCar
 
         private void priceBlrTextBox_TextChanged(object sender, EventArgs e)
         {
-            double kurs = 3.12;
+            double kurs = Convert.ToDouble(File.ReadAllText("cur.txt"));
             double priceBlr;
             if (double.TryParse(priceBlrTextBox.Text, out priceBlr))
             {
                 double priceUsd = priceBlr / kurs;
-                priceUsdTextBox.Text = priceUsd.ToString("0.00");
+                priceUsdTextBox.Text = priceUsd.ToString("0.0000");
             }
             else
             {
