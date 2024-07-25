@@ -13,12 +13,14 @@ namespace MyCar
         public Form1()
         {
             InitializeComponent();
+            InitializeDataGridView();
             InitializeDatabase();
+            LoadCategories(); // Загрузите категории в ComboBox
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            LoadData();
+            LoadData(); // Загружаем данные при старте формы
         }
 
         private void InitializeDatabase()
@@ -26,28 +28,27 @@ namespace MyCar
             if (!File.Exists("mycar.db"))
             {
                 SQLiteConnection.CreateFile("mycar.db");
-            }
-
-            using (SQLiteConnection conn = new SQLiteConnection(connectionString))
-            {
-                conn.Open();
-                string createTableQuery = @"
-            CREATE TABLE IF NOT EXISTS mycar (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                mileage INTEGER,
-                price_blr REAL,
-                price_usd REAL,
-                Description TEXT,
-                Category TEXT
-            )";
-                using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, conn))
+                using (SQLiteConnection conn = new SQLiteConnection(connectionString))
                 {
-                    cmd.ExecuteNonQuery();
+                    conn.Open();
+                    string createTableQuery = @"
+                        CREATE TABLE mycar (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            mileage INTEGER,
+                            price_blr REAL,
+                            price_usd REAL,
+                            Description TEXT,
+                            Category TEXT
+                        )";
+                    using (SQLiteCommand cmd = new SQLiteCommand(createTableQuery, conn))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
                 }
             }
         }
 
-        private void LoadData()
+        private void LoadData(string category = null)
         {
             using (SQLiteConnection conn = new SQLiteConnection(connectionString))
             {
@@ -55,17 +56,29 @@ namespace MyCar
                 {
                     conn.Open();
                     string query = "SELECT id, mileage, price_blr, price_usd, Description, Category FROM mycar";
-                    SQLiteDataAdapter adapter = new SQLiteDataAdapter(query, conn);
-                    DataTable dt = new DataTable();
-                    adapter.Fill(dt);
-
-                    if (dt.Rows.Count == 0)
+                    if (!string.IsNullOrEmpty(category))
                     {
-                        MessageBox.Show("Нет записей в базе данных");
+                        query += " WHERE Category = @category";
                     }
-                    else
+
+                    using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
                     {
-                        dataGridView1.DataSource = dt;
+                        if (!string.IsNullOrEmpty(category))
+                        {
+                            cmd.Parameters.AddWithValue("@category", category);
+                        }
+                        SQLiteDataAdapter adapter = new SQLiteDataAdapter(cmd);
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+
+                        if (dt.Rows.Count == 0)
+                        {
+                            MessageBox.Show("Нет записей в базе данных");
+                        }
+                        else
+                        {
+                            dataGridView1.DataSource = dt;
+                        }
                     }
                 }
                 catch (Exception ex)
@@ -75,20 +88,69 @@ namespace MyCar
             }
         }
 
+        private void LoadCategories()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "SELECT DISTINCT Category FROM mycar";
+                    using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
+                    {
+                        SQLiteDataReader reader = cmd.ExecuteReader();
+                        categoryTextBox.Items.Clear();
+                        while (reader.Read())
+                        {
+                            categoryTextBox.Items.Add(reader["Category"].ToString());
+                        }
+                        categoryTextBox.Items.Insert(0, "Все"); // Добавляем опцию для отображения всех категорий
+                        categoryTextBox.SelectedIndex = 0; // Устанавливаем "Все" по умолчанию
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при загрузке категорий: " + ex.Message);
+                }
+            }
+        }
+
+        private void categoryTextBox_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedCategory = categoryTextBox.SelectedItem.ToString();
+            if (selectedCategory == "Все")
+            {
+                LoadData();
+            }
+            else
+            {
+                LoadData(selectedCategory);
+            }
+        }
+
         private void createBtn_Click(object sender, EventArgs e)
         {
             using (var form = new Form2())
             {
                 if (form.ShowDialog() == DialogResult.OK)
                 {
-                    LoadData();
+                    LoadData(); // Обновляем данные после создания новой записи
                 }
             }
         }
 
-        private void ВыходToolStripMenuItem_Click(object sender, EventArgs e)
+        private void InitializeDataGridView()
         {
-            Application.Exit();
+            // Установите свойства DataGridView для заполнения всего окна
+            dataGridView1.Dock = DockStyle.Fill;
+            // Автоматическая настройка ширины колонок по заполнению
+            dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            // Автоматическая настройка высоты строк
+            dataGridView1.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            dataGridView1.ReadOnly = true;
+            dataGridView1.AllowUserToAddRows = false;
+            dataGridView1.AllowUserToDeleteRows = false;
+            dataGridView1.AllowUserToOrderColumns = false; // Запретить изменение порядка столбцов
         }
     }
 }

@@ -30,34 +30,31 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.createBtn = new System.Windows.Forms.Button();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
+            this.добавитьToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.выходToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.categoryTextBox = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // dataGridView1
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(0, 60);
+            this.dataGridView1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView1.BackgroundColor = System.Drawing.Color.Linen;
+            this.dataGridView1.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.dataGridView1.Location = new System.Drawing.Point(0, 27);
             this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(800, 354);
+            this.dataGridView1.Size = new System.Drawing.Size(800, 325);
             this.dataGridView1.TabIndex = 0;
-            // 
-            // createBtn
-            // 
-            this.createBtn.Location = new System.Drawing.Point(12, 420);
-            this.createBtn.Name = "createBtn";
-            this.createBtn.Size = new System.Drawing.Size(132, 23);
-            this.createBtn.TabIndex = 1;
-            this.createBtn.Text = "Добавить";
-            this.createBtn.UseVisualStyleBackColor = true;
-            this.createBtn.Click += new System.EventHandler(this.createBtn_Click);
             // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.добавитьToolStripMenuItem,
             this.выходToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -65,19 +62,49 @@
             this.menuStrip1.TabIndex = 2;
             this.menuStrip1.Text = "menuStrip1";
             // 
+            // добавитьToolStripMenuItem
+            // 
+            this.добавитьToolStripMenuItem.Name = "добавитьToolStripMenuItem";
+            this.добавитьToolStripMenuItem.Size = new System.Drawing.Size(71, 20);
+            this.добавитьToolStripMenuItem.Text = "Добавить";
+            this.добавитьToolStripMenuItem.Click += new System.EventHandler(this.createBtn_Click);
+            // 
             // выходToolStripMenuItem
             // 
             this.выходToolStripMenuItem.Name = "выходToolStripMenuItem";
             this.выходToolStripMenuItem.Size = new System.Drawing.Size(54, 20);
             this.выходToolStripMenuItem.Text = "Выход";
-            this.выходToolStripMenuItem.Click += new System.EventHandler(this.ВыходToolStripMenuItem_Click);
+            // 
+            // categoryTextBox
+            // 
+            this.categoryTextBox.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.categoryTextBox.FormattingEnabled = true;
+            this.categoryTextBox.Items.AddRange(new object[] {
+            "Двигатель",
+            "Подвеска",
+            "Тормозная система",
+            "Свет",
+            "Топливная система",
+            "Рулевое управление",
+            "Электрика",
+            "Трансмиссия",
+            "Система охлаждения",
+            "Кузов",
+            "Кондиционер",
+            "Плановое обслуживание",
+            "Прочие расходы"});
+            this.categoryTextBox.Location = new System.Drawing.Point(584, 3);
+            this.categoryTextBox.Name = "categoryTextBox";
+            this.categoryTextBox.Size = new System.Drawing.Size(216, 21);
+            this.categoryTextBox.TabIndex = 3;
+            this.categoryTextBox.SelectedIndexChanged += new System.EventHandler(this.categoryTextBox_SelectedIndexChanged);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.createBtn);
+            this.ClientSize = new System.Drawing.Size(800, 352);
+            this.Controls.Add(this.categoryTextBox);
             this.Controls.Add(this.dataGridView1);
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
@@ -96,9 +123,10 @@
         #endregion
 
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Button createBtn;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem выходToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem добавитьToolStripMenuItem;
+        private System.Windows.Forms.ComboBox categoryTextBox;
     }
 }
 
