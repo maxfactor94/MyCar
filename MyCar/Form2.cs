@@ -11,12 +11,44 @@ namespace MyCar
     public partial class Form2 : Form
     {
         private string connectionString = "Data Source=mycar.db;Version=3;";
+        private int? recordId = null;
 
-        public Form2()
+        public Form2(int? id = null)
         {
             InitializeComponent();
             LoadExchangeRateAsync();
             dateTimePicker.Value = DateTime.Now;
+
+            if (id.HasValue)
+            {
+                recordId = id;
+                LoadRecord(id.Value);
+            }
+        }
+
+        private void LoadRecord(int id)
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+            {
+                conn.Open();
+                string query = "SELECT * FROM mycar WHERE id = @id";
+                using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
+                {
+                    cmd.Parameters.AddWithValue("@id", id);
+                    using (SQLiteDataReader reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            mileageTextBox.Text = reader["mileage"].ToString();
+                            priceBlrTextBox.Text = reader["price_blr"].ToString();
+                            priceUsdTextBox.Text = reader["price_usd"].ToString();
+                            descriptionTextBox.Text = reader["Description"].ToString();
+                            categoryTextBox.Text = reader["Category"].ToString();
+                            dateTimePicker.Value = Convert.ToDateTime(reader["date"]);
+                        }
+                    }
+                }
+            }
         }
 
         private async void LoadExchangeRateAsync()
@@ -87,7 +119,17 @@ namespace MyCar
                     try
                     {
                         conn.Open();
-                        string query = "INSERT INTO mycar (mileage, price_blr, price_usd, Description, Category, date) VALUES (@mileage, @price_blr, @price_usd, @description, @category, @date)";
+                        string query;
+
+                        if (recordId.HasValue)
+                        {
+                            query = "UPDATE mycar SET mileage = @mileage, price_blr = @price_blr, price_usd = @price_usd, Description = @description, Category = @category, date = @date WHERE id = @id";
+                        }
+                        else
+                        {
+                            query = "INSERT INTO mycar (mileage, price_blr, price_usd, Description, Category, date) VALUES (@mileage, @price_blr, @price_usd, @description, @category, @date)";
+                        }
+
                         using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
                         {
                             cmd.Parameters.AddWithValue("@mileage", mileageTextBox.Text);
@@ -96,6 +138,12 @@ namespace MyCar
                             cmd.Parameters.AddWithValue("@description", descriptionTextBox.Text);
                             cmd.Parameters.AddWithValue("@category", categoryTextBox.Text);
                             cmd.Parameters.AddWithValue("@date", dateTimePicker.Value);
+
+                            if (recordId.HasValue)
+                            {
+                                cmd.Parameters.AddWithValue("@id", recordId.Value);
+                            }
+
                             cmd.ExecuteNonQuery();
                         }
 

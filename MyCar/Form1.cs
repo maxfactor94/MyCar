@@ -79,6 +79,13 @@ namespace MyCar
                         else
                         {
                             dataGridView1.DataSource = dt;
+                            // Установка ширины столбца id
+                            dataGridView1.Columns["id"].Width = 30;
+                            dataGridView1.Columns["mileage"].Width = 50;
+                            dataGridView1.Columns["price_blr"].Width = 55;
+                            dataGridView1.Columns["price_usd"].Width = 55;
+                            //dataGridView1.Columns["Category"].Width = 100;
+                            //dataGridView1.Columns["date"].Width = 80;
                         }
                     }
                 }
@@ -152,6 +159,29 @@ namespace MyCar
             dataGridView1.AllowUserToAddRows = false;
             dataGridView1.AllowUserToDeleteRows = false;
             dataGridView1.AllowUserToOrderColumns = false; // Запретить изменение порядка столбцов
+            
+        }
+
+        private void РедактироватьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (dataGridView1.SelectedCells.Count > 0)
+            {
+                int selectedRowIndex = dataGridView1.SelectedCells[0].RowIndex;
+                DataGridViewRow selectedRow = dataGridView1.Rows[selectedRowIndex];
+                int id = Convert.ToInt32(selectedRow.Cells["id"].Value);
+
+                using (var form = new Form2(id))
+                {
+                    if (form.ShowDialog() == DialogResult.OK)
+                    {
+                        LoadData(); // Обновляем данные после редактирования записи
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Выберите ячейку для редактирования");
+            }
         }
     }
 }
