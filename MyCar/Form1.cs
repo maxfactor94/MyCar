@@ -15,7 +15,7 @@ namespace MyCar
             InitializeComponent();
             InitializeDataGridView();
             InitializeDatabase();
-            //LoadCategories(); // Загрузите категории в ComboBox
+            LoadCategories(); // Загрузите категории в ComboBox
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -57,14 +57,16 @@ namespace MyCar
                 {
                     conn.Open();
                     string query = "SELECT id, mileage, price_blr, price_usd, Description, Category, date FROM mycar";
-                    if (!string.IsNullOrEmpty(category))
+                    if (!string.IsNullOrEmpty(category) && category != "Все")
                     {
                         query += " WHERE Category = @category";
                     }
 
+                    query += " ORDER BY mileage DESC";
+
                     using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
                     {
-                        if (!string.IsNullOrEmpty(category))
+                        if (!string.IsNullOrEmpty(category) && category != "Все")
                         {
                             cmd.Parameters.AddWithValue("@category", category);
                         }
@@ -87,13 +89,37 @@ namespace MyCar
                             //dataGridView1.Columns["Category"].Width = 100;
                             //dataGridView1.Columns["date"].Width = 80;
                         }
+
+                        // Вызываем метод для вычисления сумм после загрузки данных
+                        CalculateTotalSums();
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Ошибка при загрузке данных: " + ex.Message);
+                    //MessageBox.Show("Ошибка при загрузке данных: " + ex.Message);
+                    Console.WriteLine("Ошибка при загрузке данных: " + ex.Message);
                 }
             }
+        }
+
+        private void CalculateTotalSums()
+        {
+            decimal totalBlr = 0;
+            decimal totalUsd = 0;
+
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (row.Cells["price_blr"].Value != DBNull.Value)
+                {
+                    totalBlr += Convert.ToDecimal(row.Cells["price_blr"].Value);
+                }
+                if (row.Cells["price_usd"].Value != DBNull.Value)
+                {
+                    totalUsd += Convert.ToDecimal(row.Cells["price_usd"].Value);
+                }
+            }
+
+            label1.Text = $"Всего: {totalBlr:0.00} BYN ({totalUsd:0.00} USD)";
         }
 
         private void LoadCategories()
@@ -108,11 +134,11 @@ namespace MyCar
                     {
                         SQLiteDataReader reader = cmd.ExecuteReader();
                         categoryTextBox.Items.Clear();
+                        categoryTextBox.Items.Add("Все"); // Добавляем опцию для отображения всех категорий
                         while (reader.Read())
                         {
                             categoryTextBox.Items.Add(reader["Category"].ToString());
                         }
-                        categoryTextBox.Items.Insert(0, "Все"); // Добавляем опцию для отображения всех категорий
                         categoryTextBox.SelectedIndex = 0; // Устанавливаем "Все" по умолчанию
                     }
                 }
@@ -159,7 +185,6 @@ namespace MyCar
             dataGridView1.AllowUserToAddRows = false;
             dataGridView1.AllowUserToDeleteRows = false;
             dataGridView1.AllowUserToOrderColumns = false; // Запретить изменение порядка столбцов
-            
         }
 
         private void РедактироватьToolStripMenuItem_Click(object sender, EventArgs e)
@@ -182,6 +207,11 @@ namespace MyCar
             {
                 MessageBox.Show("Выберите ячейку для редактирования");
             }
+        }
+
+        private void ВыходToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Application.Exit();
         }
     }
 }

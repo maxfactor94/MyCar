@@ -133,8 +133,8 @@ namespace MyCar
                         using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
                         {
                             cmd.Parameters.AddWithValue("@mileage", mileageTextBox.Text);
-                            cmd.Parameters.AddWithValue("@price_blr", priceBlrTextBox.Text);
-                            cmd.Parameters.AddWithValue("@price_usd", priceUsdTextBox.Text);
+                            cmd.Parameters.AddWithValue("@price_blr", Convert.ToDecimal(priceBlrTextBox.Text));
+                            cmd.Parameters.AddWithValue("@price_usd", Convert.ToDecimal(priceUsdTextBox.Text));
                             cmd.Parameters.AddWithValue("@description", descriptionTextBox.Text);
                             cmd.Parameters.AddWithValue("@category", categoryTextBox.Text);
                             cmd.Parameters.AddWithValue("@date", dateTimePicker.Value);
