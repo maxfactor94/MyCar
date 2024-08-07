@@ -213,5 +213,10 @@ namespace MyCar
         {
             Application.Exit();
         }
+
+        private void ОбновитьToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            LoadData();
+        }
     }
 }
