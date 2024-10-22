@@ -218,5 +218,10 @@ namespace MyCar
         {
             LoadData();
         }
+
+        private void НастройкаToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
