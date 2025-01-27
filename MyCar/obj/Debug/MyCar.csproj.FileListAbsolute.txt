@@ -42,3 +42,4 @@ D:\Projects\MyCar\MyCar\obj\Debug\MyCar.csproj.CoreCompileInputs.cache
 D:\Projects\MyCar\MyCar\obj\Debug\MyCar.csproj.CopyComplete
 D:\Projects\MyCar\MyCar\obj\Debug\MyCar.exe
 D:\Projects\MyCar\MyCar\obj\Debug\MyCar.pdb
+D:\Projects\MyCar\MyCar\obj\Debug\MyCar.Form3.resources
