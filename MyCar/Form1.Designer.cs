@@ -141,6 +141,7 @@
             this.получитьДанныеССервераToolStripMenuItem.Name = "получитьДанныеССервераToolStripMenuItem";
             this.получитьДанныеССервераToolStripMenuItem.Size = new System.Drawing.Size(229, 22);
             this.получитьДанныеССервераToolStripMenuItem.Text = "Получить данные с сервера";
+            this.получитьДанныеССервераToolStripMenuItem.Click += new System.EventHandler(this.ПолучитьДанныеССервераToolStripMenuItem_Click);
             // 
             // загрузитьДанныеНаСерверToolStripMenuItem
             // 

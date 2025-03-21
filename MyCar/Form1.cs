@@ -24,7 +24,44 @@ namespace MyCar
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            // Проверяем подключение к серверу при старте приложения
+            CheckServerConnection();
+
             LoadData(); // Загружаем данные при старте формы
+        }
+
+        private void CheckServerConnection()
+        {
+            string serverUrl = File.ReadAllText("apiServer.data").Trim();
+
+            if (string.IsNullOrEmpty(serverUrl))
+            {
+                MessageBox.Show("Не указан сервер. Используется локальная база данных.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Попробуем установить соединение с сервером
+            string testUrl = $"{serverUrl.TrimEnd('/')}/testConnection.php"; // Путь к тестовому файлу на сервере
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    HttpResponseMessage response = client.GetAsync(testUrl).Result;
+                    if (response.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("Подключение к серверу успешно. Можно загрузить данные с сервера.", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Не удалось подключиться к серверу. Будет использована локальная база данных.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при подключении к серверу: {ex.Message}. Будет использована локальная база данных.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private void InitializeDatabase()
@@ -90,8 +127,6 @@ namespace MyCar
                             dataGridView1.Columns["mileage"].Width = 50;
                             dataGridView1.Columns["price_blr"].Width = 55;
                             dataGridView1.Columns["price_usd"].Width = 55;
-                            //dataGridView1.Columns["Category"].Width = 100;
-                            //dataGridView1.Columns["date"].Width = 80;
                         }
 
                         // Вызываем метод для вычисления сумм после загрузки данных
@@ -100,7 +135,6 @@ namespace MyCar
                 }
                 catch (Exception ex)
                 {
-                    //MessageBox.Show("Ошибка при загрузке данных: " + ex.Message);
                     Console.WriteLine("Ошибка при загрузке данных: " + ex.Message);
                 }
             }
@@ -249,14 +283,14 @@ namespace MyCar
                 if (row.IsNewRow) continue;
 
                 var data = new Dictionary<string, object>
-        {
-            { "mileage", row.Cells["mileage"].Value },
-            { "price_blr", row.Cells["price_blr"].Value },
-            { "price_usd", row.Cells["price_usd"].Value },
-            { "Description", row.Cells["Description"].Value },
-            { "Category", row.Cells["Category"].Value },
-            { "date", row.Cells["date"].Value }
-        };
+                {
+                    { "mileage", row.Cells["mileage"].Value },
+                    { "price_blr", row.Cells["price_blr"].Value },
+                    { "price_usd", row.Cells["price_usd"].Value },
+                    { "Description", row.Cells["Description"].Value },
+                    { "Category", row.Cells["Category"].Value },
+                    { "date", row.Cells["date"].Value }
+                };
 
                 dataToSend.Add(data);
             }
@@ -286,5 +320,115 @@ namespace MyCar
                 MessageBox.Show($"Ошибка при загрузке данных на сервер: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private async void ПолучитьДанныеССервераToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Читаем параметры подключения из файлов
+            string serverUrl = File.ReadAllText("apiServer.data").Trim();
+            string tableName = File.ReadAllText("apiCarId.data").Trim();
+
+            if (string.IsNullOrEmpty(serverUrl) || string.IsNullOrEmpty(tableName))
+            {
+                MessageBox.Show("Не указаны настройки сервера или таблицы.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Подготовка URL для запроса данных с сервера
+            string dataUrl = $"{serverUrl.TrimEnd('/')}/getDataFromServer.php?table={tableName}";
+
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    // Отправляем GET-запрос на сервер
+                    HttpResponseMessage response = await client.GetAsync(dataUrl);
+
+                    // Проверяем успешность запроса
+                    response.EnsureSuccessStatusCode();
+
+                    // Читаем данные из ответа
+                    string jsonResponse = await response.Content.ReadAsStringAsync();
+
+                    // Десериализуем JSON в объект
+                    var data = JsonConvert.DeserializeObject<List<Dictionary<string, object>>>(jsonResponse);
+
+                    if (data != null && data.Count > 0)
+                    {
+                        // Очистим локальную таблицу перед вставкой новых данных
+                        ClearLocalDatabase();
+
+                        // Вставляем новые данные в локальную базу данных
+                        InsertDataToLocalDatabase(data);
+
+                        // Обновляем DataGridView локальными данными
+                        LoadData();
+
+                        MessageBox.Show("Данные успешно обновлены в локальной базе данных.", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Нет данных для загрузки.", "Информация", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при получении данных с сервера: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void ClearLocalDatabase()
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    string query = "DELETE FROM mycar";  // Удаляем все записи в таблице
+                    using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
+                    {
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при очистке локальной базы данных: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
+        private void InsertDataToLocalDatabase(List<Dictionary<string, object>> data)
+        {
+            using (SQLiteConnection conn = new SQLiteConnection(connectionString))
+            {
+                try
+                {
+                    conn.Open();
+                    foreach (var row in data)
+                    {
+                        string query = "INSERT INTO mycar (mileage, price_blr, price_usd, Description, Category, date) VALUES (@mileage, @price_blr, @price_usd, @Description, @Category, @date)";
+
+                        using (SQLiteCommand cmd = new SQLiteCommand(query, conn))
+                        {
+                            // Добавляем параметры для вставки данных
+                            cmd.Parameters.AddWithValue("@mileage", row.ContainsKey("mileage") ? row["mileage"] : DBNull.Value);
+                            cmd.Parameters.AddWithValue("@price_blr", row.ContainsKey("price_blr") ? row["price_blr"] : DBNull.Value);
+                            cmd.Parameters.AddWithValue("@price_usd", row.ContainsKey("price_usd") ? row["price_usd"] : DBNull.Value);
+                            cmd.Parameters.AddWithValue("@Description", row.ContainsKey("Description") ? row["Description"] : DBNull.Value);
+                            cmd.Parameters.AddWithValue("@Category", row.ContainsKey("Category") ? row["Category"] : DBNull.Value);
+                            cmd.Parameters.AddWithValue("@date", row.ContainsKey("date") ? row["date"] : DBNull.Value);
+
+                            // Выполняем запрос на вставку данных
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при вставке данных в локальную базу данных: " + ex.Message, "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+
     }
 }

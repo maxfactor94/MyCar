@@ -104,9 +104,9 @@ namespace MyCar
             string serverUrl = apiServerTextBox.Text.Trim();
             string tableName = apiCarIdTextBox.Text.Trim();
 
-            if (string.IsNullOrEmpty(serverUrl))
+            if (string.IsNullOrEmpty(serverUrl) || string.IsNullOrEmpty(tableName))
             {
-                MessageBox.Show("Введите адрес сервера!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Введите сервер и название таблицы!", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -121,12 +121,21 @@ namespace MyCar
                     response.EnsureSuccessStatusCode();
 
                     string jsonResponse = await response.Content.ReadAsStringAsync();
+
+                    // Проверка, начинается ли ответ с символа "<"
+                    if (jsonResponse.StartsWith("<"))
+                    {
+                        MessageBox.Show("Получен некорректный ответ от сервера (HTML вместо JSON).", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    // Попытка десериализовать JSON
                     JObject json = JObject.Parse(jsonResponse);
 
                     if (json["status"]?.ToString() == "success")
                     {
                         MessageBox.Show(json["message"]?.ToString(), "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        addButton.Enabled = false;
+                        addButton.Visible = false; // Скрываем кнопку после создания
                     }
                     else
                     {
@@ -139,5 +148,6 @@ namespace MyCar
                 MessageBox.Show($"Ошибка: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
     }
 }
