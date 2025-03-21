@@ -1,7 +1,11 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SQLite;
 using System.IO;
+using System.Net.Http;
+using System.Text;
 using System.Windows.Forms;
 
 namespace MyCar
@@ -221,7 +225,66 @@ namespace MyCar
 
         private void НастройкаToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            Form3 form3 = new Form3();
+            form3.Show();
+        }
 
+        private async void ЗагрузитьДанныеНаСерверToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // Читаем параметры из файлов
+            string serverUrl = File.ReadAllText("apiServer.data").Trim();
+            string tableName = File.ReadAllText("apiCarId.data").Trim();
+
+            if (string.IsNullOrEmpty(serverUrl) || string.IsNullOrEmpty(tableName))
+            {
+                MessageBox.Show("Не указаны настройки сервера или таблицы.", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Подготовка данных для отправки на сервер
+            var dataToSend = new List<Dictionary<string, object>>();
+
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                var data = new Dictionary<string, object>
+        {
+            { "mileage", row.Cells["mileage"].Value },
+            { "price_blr", row.Cells["price_blr"].Value },
+            { "price_usd", row.Cells["price_usd"].Value },
+            { "Description", row.Cells["Description"].Value },
+            { "Category", row.Cells["Category"].Value },
+            { "date", row.Cells["date"].Value }
+        };
+
+                dataToSend.Add(data);
+            }
+
+            // Преобразуем данные в JSON
+            string jsonData = JsonConvert.SerializeObject(dataToSend);
+
+            // Подготовим URL для отправки данных на сервер
+            string updateUrl = $"{serverUrl.TrimEnd('/')}/updateToServer.php";
+
+            // Отправляем POST-запрос
+            try
+            {
+                using (HttpClient client = new HttpClient())
+                {
+                    var content = new StringContent($"table={tableName}&data={jsonData}", Encoding.UTF8, "application/x-www-form-urlencoded");
+
+                    HttpResponseMessage response = await client.PostAsync(updateUrl, content);
+                    response.EnsureSuccessStatusCode();
+
+                    string responseContent = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show($"Данные успешно загружены: {responseContent}", "Успех", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ошибка при загрузке данных на сервер: {ex.Message}", "Ошибка", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
