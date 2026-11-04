@@ -54,3 +54,4 @@ C:\Users\Maxfa\source\repos\MyCar\MyCar\System.Memory.xml
 C:\Users\Maxfa\source\repos\MyCar\MyCar\System.Numerics.Vectors.xml
 C:\Users\Maxfa\source\repos\MyCar\MyCar\System.Runtime.CompilerServices.Unsafe.xml
 C:\Users\Maxfa\source\repos\MyCar\MyCar\System.Threading.Tasks.Extensions.xml
+C:\Users\Maxfa\source\repos\MyCar\MyCar\obj\Release\MyCar.csproj.AssemblyReference.cache
