@@ -32,7 +32,7 @@ namespace MyCar
 
         private void CheckServerConnection()
         {
-            string serverUrl = File.ReadAllText("apiServer.data").Trim();
+            string serverUrl = ApiServerUrl.Normalize(File.ReadAllText("apiServer.data"));
 
             if (string.IsNullOrEmpty(serverUrl))
             {
@@ -266,7 +266,7 @@ namespace MyCar
         private async void ЗагрузитьДанныеНаСерверToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Читаем параметры из файлов
-            string serverUrl = File.ReadAllText("apiServer.data").Trim();
+            string serverUrl = ApiServerUrl.Normalize(File.ReadAllText("apiServer.data"));
             string tableName = File.ReadAllText("apiCarId.data").Trim();
 
             if (string.IsNullOrEmpty(serverUrl) || string.IsNullOrEmpty(tableName))
@@ -324,7 +324,7 @@ namespace MyCar
         private async void ПолучитьДанныеССервераToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Читаем параметры подключения из файлов
-            string serverUrl = File.ReadAllText("apiServer.data").Trim();
+            string serverUrl = ApiServerUrl.Normalize(File.ReadAllText("apiServer.data"));
             string tableName = File.ReadAllText("apiCarId.data").Trim();
 
             if (string.IsNullOrEmpty(serverUrl) || string.IsNullOrEmpty(tableName))
