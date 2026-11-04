@@ -32,7 +32,7 @@ namespace MyCar
 
         private void CheckServerConnection()
         {
-            string serverUrl = File.ReadAllText("apiServer.data").Trim();
+            string serverUrl = ApiServerUrl.Normalize(File.ReadAllText("apiServer.data"));
 
             if (string.IsNullOrEmpty(serverUrl))
             {
@@ -41,7 +41,7 @@ namespace MyCar
             }
 
             // Попробуем установить соединение с сервером
-            string testUrl = $"{serverUrl.TrimEnd('/')}/testConnection.php"; // Путь к тестовому файлу на сервере
+            string testUrl = $"{serverUrl.TrimEnd('/')}/check.php"; // Единая точка проверки API
 
             try
             {
@@ -266,7 +266,7 @@ namespace MyCar
         private async void ЗагрузитьДанныеНаСерверToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Читаем параметры из файлов
-            string serverUrl = File.ReadAllText("apiServer.data").Trim();
+            string serverUrl = ApiServerUrl.Normalize(File.ReadAllText("apiServer.data"));
             string tableName = File.ReadAllText("apiCarId.data").Trim();
 
             if (string.IsNullOrEmpty(serverUrl) || string.IsNullOrEmpty(tableName))
@@ -306,7 +306,11 @@ namespace MyCar
             {
                 using (HttpClient client = new HttpClient())
                 {
-                    var content = new StringContent($"table={tableName}&data={jsonData}", Encoding.UTF8, "application/x-www-form-urlencoded");
+                    var content = new FormUrlEncodedContent(new[]
+                    {
+                        new KeyValuePair<string, string>("table", tableName),
+                        new KeyValuePair<string, string>("data", jsonData)
+                    });
 
                     HttpResponseMessage response = await client.PostAsync(updateUrl, content);
                     response.EnsureSuccessStatusCode();
@@ -324,7 +328,7 @@ namespace MyCar
         private async void ПолучитьДанныеССервераToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // Читаем параметры подключения из файлов
-            string serverUrl = File.ReadAllText("apiServer.data").Trim();
+            string serverUrl = ApiServerUrl.Normalize(File.ReadAllText("apiServer.data"));
             string tableName = File.ReadAllText("apiCarId.data").Trim();
 
             if (string.IsNullOrEmpty(serverUrl) || string.IsNullOrEmpty(tableName))
@@ -334,7 +338,7 @@ namespace MyCar
             }
 
             // Подготовка URL для запроса данных с сервера
-            string dataUrl = $"{serverUrl.TrimEnd('/')}/getDataFromServer.php?table={tableName}";
+            string dataUrl = $"{serverUrl.TrimEnd('/')}/getDataFromServer.php?table={Uri.EscapeDataString(tableName)}";
 
             try
             {
