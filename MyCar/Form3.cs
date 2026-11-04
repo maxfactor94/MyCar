@@ -16,7 +16,7 @@ namespace MyCar
             InitializeComponent();
             try
             {
-                apiServerTextBox.Text = File.ReadAllText("apiServer.data");
+                apiServerTextBox.Text = ApiServerUrl.Normalize(File.ReadAllText("apiServer.data"));
                 apiCarIdTextBox.Text = File.ReadAllText("apiCarId.data");
             }
             catch
@@ -27,9 +27,10 @@ namespace MyCar
 
         private async void Button1_Click(object sender, EventArgs e)
         {
-            File.WriteAllText("apiServer.data", apiServerTextBox.Text.Trim());
-            File.WriteAllText("apiCarId.data", apiCarIdTextBox.Text.Trim());
-            string serverUrl = apiServerTextBox.Text.Trim();  // URL сервера
+            string serverUrl = ApiServerUrl.Normalize(apiServerTextBox.Text);
+            apiServerTextBox.Text = serverUrl;
+            File.WriteAllText("apiServer.data", serverUrl);
+            File.WriteAllText("apiCarId.data", apiCarIdTextBox.Text.Trim());  // URL сервера
             string tableName = apiCarIdTextBox.Text.Trim();   // Название таблицы
 
             if (string.IsNullOrEmpty(serverUrl))
@@ -101,7 +102,7 @@ namespace MyCar
 
         private async void AddButton_Click(object sender, EventArgs e)
         {
-            string serverUrl = apiServerTextBox.Text.Trim();
+            string serverUrl = ApiServerUrl.Normalize(apiServerTextBox.Text);
             string tableName = apiCarIdTextBox.Text.Trim();
 
             if (string.IsNullOrEmpty(serverUrl) || string.IsNullOrEmpty(tableName))
