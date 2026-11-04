@@ -31,7 +31,6 @@ namespace MyCar
             apiServerTextBox.Text = serverUrl;
             File.WriteAllText("apiServer.data", serverUrl);
             File.WriteAllText("apiCarId.data", apiCarIdTextBox.Text.Trim());
-            string serverUrl = ApiServerUrl.Normalize(apiServerTextBox.Text);
             string tableName = apiCarIdTextBox.Text.Trim();   // Название таблицы
 
             if (string.IsNullOrEmpty(serverUrl))
@@ -103,7 +102,7 @@ namespace MyCar
 
         private async void AddButton_Click(object sender, EventArgs e)
         {
-            string serverUrl = apiServerTextBox.Text.Trim();
+            string serverUrl = ApiServerUrl.Normalize(apiServerTextBox.Text);
             string tableName = apiCarIdTextBox.Text.Trim();
 
             if (string.IsNullOrEmpty(serverUrl) || string.IsNullOrEmpty(tableName))
