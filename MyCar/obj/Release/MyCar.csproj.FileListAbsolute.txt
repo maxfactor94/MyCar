@@ -43,7 +43,6 @@ C:\Users\Maxfa\source\repos\MyCar\MyCar\bin\Release\System.Memory.xml
 C:\Users\Maxfa\source\repos\MyCar\MyCar\bin\Release\System.Numerics.Vectors.xml
 C:\Users\Maxfa\source\repos\MyCar\MyCar\bin\Release\System.Runtime.CompilerServices.Unsafe.xml
 C:\Users\Maxfa\source\repos\MyCar\MyCar\bin\Release\System.Threading.Tasks.Extensions.xml
-C:\Users\Maxfa\source\repos\MyCar\MyCar\obj\Release\MyCar.csprojAssemblyReference.cache
 C:\Users\Maxfa\source\repos\MyCar\MyCar\obj\Release\MyCar.Form1.resources
 C:\Users\Maxfa\source\repos\MyCar\MyCar\obj\Release\MyCar.Form2.resources
 C:\Users\Maxfa\source\repos\MyCar\MyCar\obj\Release\MyCar.Form3.resources
@@ -53,3 +52,4 @@ C:\Users\Maxfa\source\repos\MyCar\MyCar\obj\Release\MyCar.csproj.CoreCompileInpu
 C:\Users\Maxfa\source\repos\MyCar\MyCar\obj\Release\MyCar.csproj.CopyComplete
 C:\Users\Maxfa\source\repos\MyCar\MyCar\obj\Release\MyCar.exe
 C:\Users\Maxfa\source\repos\MyCar\MyCar\obj\Release\MyCar.pdb
+C:\Users\Maxfa\source\repos\MyCar\MyCar\obj\Release\MyCar.csproj.AssemblyReference.cache
